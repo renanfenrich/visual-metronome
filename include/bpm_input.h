@@ -13,6 +13,7 @@ class BpmInput {
                     uint16_t changeThresholdBpm = kChangeThresholdBpm);
 
   static uint16_t mapAdcToBpm(uint16_t adc);
+  // Ignores small mapped changes to prevent analog-input jitter from retiming.
   bool acceptAdc(uint16_t adc);
   void setBpm(uint16_t bpm);
   uint16_t bpm() const;

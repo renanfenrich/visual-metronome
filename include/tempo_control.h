@@ -13,6 +13,7 @@ class TempoControl {
 
   explicit TempoControl(uint16_t initialBpm);
 
+  // After a tap, the potentiometer must move far enough to take control back.
   bool acceptPotAdc(uint16_t adc);
   void acceptTap(uint16_t bpm, uint16_t capturedAdc);
   uint16_t bpm() const;

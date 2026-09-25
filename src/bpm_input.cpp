@@ -18,6 +18,7 @@ uint16_t BpmInput::mapAdcToBpm(uint16_t adc) {
 
 bool BpmInput::acceptAdc(uint16_t adc) {
   const uint16_t mappedBpm = mapAdcToBpm(adc);
+  // Compare after mapping because the ADC threshold varies across the BPM range.
   const uint16_t difference = mappedBpm > bpm_ ? mappedBpm - bpm_ : bpm_ - mappedBpm;
   if (difference < changeThresholdBpm_) {
     return false;

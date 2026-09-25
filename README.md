@@ -68,7 +68,9 @@ and `millis()`.
 
 The clock uses integer timing, rollover-safe deadline comparisons, and
 accumulated deadlines rather than `delay()`. See
-[architecture](docs/architecture.md) for implementation details.
+[architecture](docs/architecture.md),
+[technical reference](docs/technical-reference.md), and [wiring](docs/wiring.md)
+for implementation details.
 
 ## Local use
 

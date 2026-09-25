@@ -44,6 +44,7 @@ uint32_t Clock::nextDeadlineUs() const {
 }
 
 bool Clock::reached(uint32_t nowUs, uint32_t deadlineUs) {
+  // Signed subtraction keeps deadline comparisons valid across micros() wraparound.
   return static_cast<int32_t>(nowUs - deadlineUs) >= 0;
 }
 
