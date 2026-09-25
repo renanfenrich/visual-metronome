@@ -16,6 +16,11 @@ void BeatSequence::advance(uint16_t elapsedBeats) {
   active_ = true;
 }
 
+void BeatSequence::reset() {
+  position_ = pattern_.downbeat();
+  active_ = false;
+}
+
 bool BeatSequence::active() const {
   return active_;
 }

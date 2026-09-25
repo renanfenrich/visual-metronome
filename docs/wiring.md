@@ -1,4 +1,4 @@
-# G0 wiring
+# G4 wiring
 
 Use one current-limiting resistor for each LED:
 
@@ -16,3 +16,12 @@ not be inferred from photographs.
 
 After the startup sanity check, all four LEDs are off until the first clock
 deadline. Then exactly one LED is on at a time in D2, D3, D4, D5 order.
+
+| Arduino pin | Connection |
+| --- | --- |
+| A0 | BPM potentiometer wiper; ends to 5V and GND |
+| D6 | Start/Stop push button -> GND |
+| D7 | Tap Tempo push button -> GND |
+
+D6 and D7 use `INPUT_PULLUP`: an unpressed button reads HIGH and a press reads
+LOW. Firmware debounces each input for 30 ms without `delay()`.

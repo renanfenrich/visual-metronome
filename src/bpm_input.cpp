@@ -27,6 +27,10 @@ bool BpmInput::acceptAdc(uint16_t adc) {
   return true;
 }
 
+void BpmInput::setBpm(uint16_t bpm) {
+  bpm_ = bpm;
+}
+
 uint16_t BpmInput::bpm() const {
   return bpm_;
 }

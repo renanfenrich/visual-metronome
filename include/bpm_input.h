@@ -14,6 +14,7 @@ class BpmInput {
 
   static uint16_t mapAdcToBpm(uint16_t adc);
   bool acceptAdc(uint16_t adc);
+  void setBpm(uint16_t bpm);
   uint16_t bpm() const;
 
  private:
