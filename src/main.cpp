@@ -1,11 +1,12 @@
 #include <Arduino.h>
 
-#include "beat_sequence.h"
-#include "bpm_input.h"
-#include "clock.h"
 #include "config.h"
+#include "debouncer.h"
 #include "pattern.h"
+#include "tap_tempo.h"
 #include "tempo.h"
+#include "tempo_control.h"
+#include "transport.h"
 
 namespace {
 
@@ -14,10 +15,13 @@ unsigned long sanityStartedAt = 0;
 constexpr unsigned long kSanityDurationMs = 150;
 constexpr unsigned long kBpmSampleIntervalMs = 25;
 metronome::Tempo tempo;
-metronome::Clock clock(tempo);
-metronome::BeatSequence sequence(metronome::Pattern(4, 0));
-metronome::BpmInput bpmInput(tempo.bpm());
+metronome::Transport transport(tempo, metronome::Pattern(4, 0));
+metronome::TempoControl tempoControl(tempo.bpm());
+metronome::Debouncer startStopButton;
+metronome::Debouncer tapButton;
+metronome::TapTempo tapTempo;
 unsigned long lastBpmSampleAt = 0;
+uint16_t lastAdc = 0;
 
 void setLeds(uint8_t state) {
   for (uint8_t i = 0; i < metronome::kLedCount; ++i) {
@@ -30,6 +34,14 @@ void showBeat(uint8_t position) {
     digitalWrite(metronome::kLedPins[i], i == position ? HIGH : LOW);
   }
 }
+
+void setBpm(uint16_t bpm, bool fromTap, uint32_t nowUs) {
+  tempo.setBpm(bpm);
+  transport.setTempo(tempo, nowUs);
+  Serial.print(F("BPM: "));
+  Serial.print(tempo.bpm());
+  Serial.println(fromTap ? F(" (tap)") : F(" (pot)"));
+}
 }  // namespace
 
 void setup() {
@@ -38,11 +50,14 @@ void setup() {
   for (uint8_t i = 0; i < metronome::kLedCount; ++i) {
     pinMode(metronome::kLedPins[i], OUTPUT);
   }
+  pinMode(metronome::kStartStopPin, INPUT_PULLUP);
+  pinMode(metronome::kTapTempoPin, INPUT_PULLUP);
   setLeds(LOW);
+  lastAdc = analogRead(metronome::kBpmPin);
 
   Serial.println(F("Visual Metronome"));
   Serial.println(F("Firmware: 0.1.0"));
-  Serial.println(F("Goal: G3"));
+  Serial.println(F("Goal: G4"));
   Serial.println(F("Status: READY"));
 
   setLeds(HIGH);
@@ -52,25 +67,41 @@ void setup() {
 
 void loop() {
   const unsigned long nowMs = millis();
+  const unsigned long nowUs = micros();
   if (nowMs - lastBpmSampleAt >= kBpmSampleIntervalMs) {
     lastBpmSampleAt = nowMs;
-    if (bpmInput.acceptAdc(analogRead(A0))) {
-      tempo.setBpm(bpmInput.bpm());
-      clock.setTempo(tempo, micros());
-      Serial.print(F("BPM: "));
-      Serial.println(tempo.bpm());
+    lastAdc = analogRead(metronome::kBpmPin);
+    if (tempoControl.acceptPotAdc(lastAdc)) {
+      setBpm(tempoControl.bpm(), false, nowUs);
     }
   }
 
   if (sanityActive && millis() - sanityStartedAt >= kSanityDurationMs) {
     setLeds(LOW);
     sanityActive = false;
-    clock.start(micros());
+    transport.toggle(nowUs);
   }
 
-  const uint16_t elapsedBeats = clock.update(micros());
-  if (elapsedBeats > 0) {
-    sequence.advance(elapsedBeats);
-    showBeat(sequence.position());
+  const bool startPressed = startStopButton.update(
+      digitalRead(metronome::kStartStopPin) == HIGH, nowMs);
+  const bool tapPressed = tapButton.update(
+      digitalRead(metronome::kTapTempoPin) == HIGH, nowMs);
+
+  if (!sanityActive && startPressed) {
+    if (transport.toggle(nowUs)) {
+      Serial.println(F("Transport: RUNNING"));
+    } else {
+      setLeds(LOW);
+      Serial.println(F("Transport: STOPPED"));
+    }
+  }
+
+  if (!sanityActive && tapPressed && tapTempo.tap(nowUs)) {
+    tempoControl.acceptTap(tapTempo.bpm(), lastAdc);
+    setBpm(tempoControl.bpm(), true, nowUs);
+  }
+
+  if (transport.update(nowUs) > 0) {
+    showBeat(transport.sequence().position());
   }
 }

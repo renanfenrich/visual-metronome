@@ -46,3 +46,18 @@ LED off, `main.cpp` starts the clock; its first event activates position zero
 (D2). Subsequent events advance D3, D4, D5 and wrap to D2. A delayed clock
 poll advances the sequence with the full returned count using modular
 arithmetic, so a four-beat catch-up preserves the current position.
+
+G4 adds pure `Debouncer`, `TapTempo`, `TempoControl`, and `Transport` domain
+models. Buttons are active-low `INPUT_PULLUP` GPIO inputs, and each stable LOW
+transition after 30 ms yields one press event; release re-arms it. Start/Stop
+stops the clock and leaves LEDs off. Restart resets the sequence and schedules
+Beat 1/D2 one complete interval later. Startup remains automatic after the G0
+sanity indication.
+
+Tap Tempo stores up to three valid intervals (four taps) and applies integer
+`60,000,000 / average_interval_us`. The first tap only starts a sequence. A
+gap over 2000 ms, or an interval below 250 ms or above 1500 ms, restarts the
+sequence at the current tap without changing BPM. Accepted taps set TAP_CONTROL
+and capture the current A0 ADC reading. Potentiometer samples continue, but
+only movement of at least 12 ADC counts returns POTENTIOMETER_CONTROL; its
+existing 2-BPM hysteresis then applies.
