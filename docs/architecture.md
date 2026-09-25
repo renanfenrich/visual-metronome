@@ -1,9 +1,12 @@
 # Architecture
 
-The `Tempo`, `Clock`, `Pattern`, and `BeatSequence` modules are small C++
-domain models with no Arduino headers. `main.cpp` owns GPIO and calls
-`Clock::update(micros())`. This keeps musical rules testable on the host and
-prevents them from being coupled to `digitalWrite()`.
+The domain layer is implemented as small Arduino-independent C++ modules:
+`Tempo`, `Clock`, `Pattern`, `BeatSequence`, `BpmInput`, `Debouncer`,
+`TapTempo`, `TempoControl`, `Transport`, and `TimeSignature`. `main.cpp`
+owns Arduino-specific GPIO, ADC sampling, and timing sources, then feeds
+`micros()` / `millis()` values into the domain layer. This keeps musical and
+control rules host-testable and prevents them from being coupled directly to
+`digitalWrite()`, `analogRead()`, or button GPIO handling.
 
 G0's one-time LED indication remains non-blocking and separate from the G1
 clock. `Tempo::intervalUs()` uses integer arithmetic: `60,000,000 / BPM`.
