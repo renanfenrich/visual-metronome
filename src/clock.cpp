@@ -18,6 +18,13 @@ bool Clock::running() const {
   return running_;
 }
 
+void Clock::setTempo(const Tempo& tempo, uint32_t nowUs) {
+  intervalUs_ = tempo.intervalUs();
+  if (running_) {
+    nextDeadlineUs_ = nowUs + intervalUs_;
+  }
+}
+
 uint16_t Clock::update(uint32_t nowUs) {
   if (!running_ || !reached(nowUs, nextDeadlineUs_)) {
     return 0;

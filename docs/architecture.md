@@ -33,6 +33,14 @@ Deadline comparisons use `static_cast<int32_t>(now_us - deadline_us) >= 0`,
 which is safe across the `uint32_t micros()` rollover as long as polling stays
 inside that half-wrap window.
 
+G3 adds a pure `BpmInput` mapper: it converts the Arduino ADC range 0--1023
+to 40--240 BPM using integer arithmetic and only accepts changes of at least
+2 BPM. `main.cpp` samples A0 every 25 ms without blocking. When a value is
+accepted, it updates `Tempo` and calls `Clock::setTempo(tempo, micros())`.
+While running, that replaces the interval and schedules the next beat one new
+interval after the current time. It emits no synthetic beat; subsequent beats
+again use accumulated deadlines.
+
 `BeatSequence` starts inactive at its downbeat position. After G0 turns every
 LED off, `main.cpp` starts the clock; its first event activates position zero
 (D2). Subsequent events advance D3, D4, D5 and wrap to D2. A delayed clock
