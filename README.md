@@ -1,31 +1,74 @@
 # Visual Metronome
 
-An Arduino Uno visual metronome foundation for musicians who cannot rely on
-headphone monitoring. G0 uses an Uno, four LEDs, four current-limiting
-resistors, a breadboard, and jumper wires.
+An Arduino Uno visual metronome for musicians who cannot rely on headphone
+monitoring. The current prototype has four beat LEDs, potentiometer BPM control,
+Start/Stop, Tap Tempo, and 3/4 / 4/4 mode selection.
 
-## G5 scope
+## Current status
 
-G0 establishes PlatformIO, a host-testable musical domain, Uno firmware that
-initializes D2-D5, a brief non-blocking startup LED check, and documentation.
-G1 adds a host-testable deterministic tempo clock. G2 adds a four-step visual
-sequence: after the sanity check, the first clock event lights D2, followed by
-D3, D4, D5, then D2 again. G3 samples the A0 potentiometer every 25 ms and
-maps it to a stable 40--240 BPM range. G4 adds active-low D6 Start/Stop and D7
-Tap Tempo buttons with 30 ms non-blocking debounce. G5 adds an active-low D8
-mode button that cycles 4/4 and 3/4. It does not add 5/4, 6/8, or 7/8: those
-require G6's eight-LED hardware expansion. G5 also does not add persistence,
-audio, MIDI, or gestures.
+G0 through G5 are complete and physically validated.
+
+- G0 - Repository/bootstrap and four-LED hardware smoke test
+- G1 - Deterministic tempo clock
+- G2 - Four-LED visual 4/4 sequence
+- G3 - Potentiometer BPM control (40-240 BPM)
+- G4 - Start/Stop and Tap Tempo controls
+- G5 - Time-signature mode selection between 4/4 and 3/4
+
+G6 is next and is planned to expand the hardware to eight LEDs before adding
+5/4, 6/8, 7/8, accents, and grouping patterns.
+
+## Hardware
+
+Current prototype:
+
+- Arduino Uno
+- 4 beat LEDs on D2-D5, each with its own current-limiting resistor
+- Start/Stop button on D6
+- Tap Tempo button on D7
+- Mode button on D8
+- BPM potentiometer on A0
+- breadboard and jumper wires
+
+The three buttons use active-low `INPUT_PULLUP` wiring to GND. See
+[wiring](docs/wiring.md) for details.
+
+## Behavior
+
+At startup the firmware performs a brief non-blocking LED sanity check, then
+starts the metronome automatically.
+
+In 4/4, the visual sequence is:
+
+```text
+D2 -> D3 -> D4 -> D5 -> D2
+```
+
+In 3/4:
+
+```text
+D2 -> D3 -> D4 -> D2
+```
+
+D5 remains off in 3/4.
+
+The potentiometer maps A0 to 40-240 BPM with hysteresis. Tap Tempo can take
+temporary ownership of tempo, and the potentiometer resumes control only after
+meaningful physical movement.
 
 ## Architecture
 
-`Tempo`, `Clock`, `Pattern`, `BeatSequence`, and `BpmInput` are Arduino-independent C++
-domain modules. `main.cpp` owns GPIO and supplies `micros()` to `Clock::update()`.
-Tempo clamps
-values to 40-240 BPM and calculates `60,000,000 / BPM` microseconds per beat.
-The clock starts with its first deadline one full interval later and advances
-deadlines by whole intervals. See
-[architecture](docs/architecture.md) and [wiring](docs/wiring.md).
+The musical and control logic is kept in Arduino-independent C++ modules so it
+can be tested natively. Current domain modules include `Tempo`, `Clock`,
+`Pattern`, `BeatSequence`, `BpmInput`, `Debouncer`, `TapTempo`,
+`TempoControl`, `Transport`, and `TimeSignature`.
+
+`main.cpp` owns Arduino-specific GPIO, ADC sampling, and calls to `micros()`
+and `millis()`.
+
+The clock uses integer timing, rollover-safe deadline comparisons, and
+accumulated deadlines rather than `delay()`. See
+[architecture](docs/architecture.md) for implementation details.
 
 ## Local use
 
@@ -43,6 +86,4 @@ uploads it, and the last opens the serial monitor.
 
 ## Roadmap
 
-G0 through G3 are complete in source form. G3 is limited to A0 potentiometer
-tempo control; it does not add buttons, persistence, microphone, or MIDI.
 Full status: [roadmap](docs/roadmap.md).
