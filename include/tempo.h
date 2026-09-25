@@ -13,6 +13,7 @@ class Tempo {
   explicit Tempo(uint16_t bpm = kDefaultBpm);
 
   uint16_t bpm() const;
+  uint32_t intervalUs() const;
   void setBpm(uint16_t bpm);
 
  private:

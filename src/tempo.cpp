@@ -10,6 +10,10 @@ uint16_t Tempo::bpm() const {
   return bpm_;
 }
 
+uint32_t Tempo::intervalUs() const {
+  return 60000000UL / bpm_;
+}
+
 void Tempo::setBpm(uint16_t bpm) {
   if (bpm < kMinBpm) {
     bpm_ = kMinBpm;
