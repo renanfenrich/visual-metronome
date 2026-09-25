@@ -57,6 +57,22 @@ void test_rollover_deadline_is_reached() {
   TEST_ASSERT_EQUAL_UINT16(1, clock.update(deadline));
 }
 
+void test_tempo_change_updates_interval_and_schedules_next_beat_from_now() {
+  metronome::Tempo tempo(120);
+  metronome::Clock clock(tempo);
+  clock.start(1000);
+
+  tempo.setBpm(240);
+  clock.setTempo(tempo, 200000);
+
+  TEST_ASSERT_EQUAL_UINT32(250000UL, clock.intervalUs());
+  TEST_ASSERT_EQUAL_UINT32(450000UL, clock.nextDeadlineUs());
+  TEST_ASSERT_EQUAL_UINT16(0, clock.update(200000));
+  TEST_ASSERT_EQUAL_UINT16(0, clock.update(449999));
+  TEST_ASSERT_EQUAL_UINT16(1, clock.update(450000));
+  TEST_ASSERT_EQUAL_UINT32(700000UL, clock.nextDeadlineUs());
+}
+
 }  // namespace
 
 #ifdef ARDUINO
@@ -68,6 +84,7 @@ void setup() {
   RUN_TEST(test_deadline_is_exact_and_accumulated);
   RUN_TEST(test_delayed_polling_reports_all_elapsed_beats_without_drift);
   RUN_TEST(test_rollover_deadline_is_reached);
+  RUN_TEST(test_tempo_change_updates_interval_and_schedules_next_beat_from_now);
   UNITY_END();
 }
 
@@ -81,6 +98,7 @@ int main() {
   RUN_TEST(test_deadline_is_exact_and_accumulated);
   RUN_TEST(test_delayed_polling_reports_all_elapsed_beats_without_drift);
   RUN_TEST(test_rollover_deadline_is_reached);
+  RUN_TEST(test_tempo_change_updates_interval_and_schedules_next_beat_from_now);
   return UNITY_END();
 }
 #endif
