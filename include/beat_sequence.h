@@ -13,6 +13,7 @@ class BeatSequence {
   // The first elapsed beat selects the pattern downbeat.
   void advance(uint16_t elapsedBeats);
   void reset();
+  void setPattern(const Pattern& pattern);
 
   bool active() const;
   uint8_t position() const;

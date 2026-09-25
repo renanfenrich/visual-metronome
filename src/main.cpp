@@ -6,6 +6,7 @@
 #include "tap_tempo.h"
 #include "tempo.h"
 #include "tempo_control.h"
+#include "time_signature.h"
 #include "transport.h"
 
 namespace {
@@ -15,10 +16,12 @@ unsigned long sanityStartedAt = 0;
 constexpr unsigned long kSanityDurationMs = 150;
 constexpr unsigned long kBpmSampleIntervalMs = 25;
 metronome::Tempo tempo;
-metronome::Transport transport(tempo, metronome::Pattern(4, 0));
+metronome::TimeSignature timeSignature;
+metronome::Transport transport(tempo, timeSignature.pattern());
 metronome::TempoControl tempoControl(tempo.bpm());
 metronome::Debouncer startStopButton;
 metronome::Debouncer tapButton;
+metronome::Debouncer modeButton;
 metronome::TapTempo tapTempo;
 unsigned long lastBpmSampleAt = 0;
 uint16_t lastAdc = 0;
@@ -52,12 +55,13 @@ void setup() {
   }
   pinMode(metronome::kStartStopPin, INPUT_PULLUP);
   pinMode(metronome::kTapTempoPin, INPUT_PULLUP);
+  pinMode(metronome::kModePin, INPUT_PULLUP);
   setLeds(LOW);
   lastAdc = analogRead(metronome::kBpmPin);
 
   Serial.println(F("Visual Metronome"));
   Serial.println(F("Firmware: 0.1.0"));
-  Serial.println(F("Goal: G4"));
+  Serial.println(F("Goal: G5"));
   Serial.println(F("Status: READY"));
 
   setLeds(HIGH);
@@ -86,6 +90,8 @@ void loop() {
       digitalRead(metronome::kStartStopPin) == HIGH, nowMs);
   const bool tapPressed = tapButton.update(
       digitalRead(metronome::kTapTempoPin) == HIGH, nowMs);
+  const bool modePressed = modeButton.update(
+      digitalRead(metronome::kModePin) == HIGH, nowMs);
 
   if (!sanityActive && startPressed) {
     if (transport.toggle(nowUs)) {
@@ -99,6 +105,14 @@ void loop() {
   if (!sanityActive && tapPressed && tapTempo.tap(nowUs)) {
     tempoControl.acceptTap(tapTempo.bpm(), lastAdc);
     setBpm(tempoControl.bpm(), true, nowUs);
+  }
+
+  if (!sanityActive && modePressed) {
+    timeSignature.cycle();
+    transport.setPattern(timeSignature.pattern());
+    setLeds(LOW);
+    Serial.print(F("Signature: "));
+    Serial.println(timeSignature.label());
   }
 
   if (transport.update(nowUs) > 0) {

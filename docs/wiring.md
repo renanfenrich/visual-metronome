@@ -1,4 +1,4 @@
-# G4 wiring
+# G5 wiring
 
 Use one current-limiting resistor for each LED:
 
@@ -22,6 +22,9 @@ deadline. Then exactly one LED is on at a time in D2, D3, D4, D5 order.
 | A0 | BPM potentiometer wiper; ends to 5V and GND |
 | D6 | Start/Stop push button -> GND |
 | D7 | Tap Tempo push button -> GND |
+| D8 | Mode push button -> GND |
 
-D6 and D7 use `INPUT_PULLUP`: an unpressed button reads HIGH and a press reads
-LOW. Firmware debounces each input for 30 ms without `delay()`.
+D6, D7, and D8 use `INPUT_PULLUP`: an unpressed button reads HIGH and a press
+reads LOW. Firmware debounces each input for 30 ms without `delay()`. D8 cycles
+between 4/4 and 3/4. In 3/4, D5 remains off; 5/4, 6/8, and 7/8 are deferred to
+G6 because this hardware has only four beat LEDs.
