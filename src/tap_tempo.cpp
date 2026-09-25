@@ -20,6 +20,7 @@ bool TapTempo::tap(uint32_t nowUs) {
   if (intervalCount_ < 3) {
     intervals_[intervalCount_++] = intervalUs;
   } else {
+    // Keep a short rolling window so one uneven tap has limited influence.
     intervals_[0] = intervals_[1];
     intervals_[1] = intervals_[2];
     intervals_[2] = intervalUs;

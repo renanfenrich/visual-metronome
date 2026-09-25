@@ -12,7 +12,8 @@ class TapTempo {
 
   TapTempo();
 
-  // Returns true only when this tap produces an accepted BPM.
+  // Returns true only when this tap produces an accepted BPM; the first tap
+  // establishes the reference time.
   bool tap(uint32_t nowUs);
   uint16_t bpm() const;
   void reset();

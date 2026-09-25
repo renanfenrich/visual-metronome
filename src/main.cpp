@@ -65,6 +65,7 @@ void setup() {
   Serial.println(F("Status: READY"));
 
   setLeds(HIGH);
+  // Keep startup verification non-blocking so the normal loop remains responsive.
   sanityStartedAt = millis();
   sanityActive = true;
 }
@@ -73,6 +74,7 @@ void loop() {
   const unsigned long nowMs = millis();
   const unsigned long nowUs = micros();
   if (nowMs - lastBpmSampleAt >= kBpmSampleIntervalMs) {
+    // Sample at a fixed cadence instead of reacting to every loop iteration.
     lastBpmSampleAt = nowMs;
     lastAdc = analogRead(metronome::kBpmPin);
     if (tempoControl.acceptPotAdc(lastAdc)) {
@@ -115,6 +117,7 @@ void loop() {
     Serial.println(timeSignature.label());
   }
 
+  // Process input first so a state change cannot be followed by a stale beat.
   if (transport.update(nowUs) > 0) {
     showBeat(transport.sequence().position());
   }

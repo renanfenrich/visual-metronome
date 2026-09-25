@@ -7,6 +7,7 @@ TempoControl::TempoControl(uint16_t initialBpm)
 
 bool TempoControl::acceptPotAdc(uint16_t adc) {
   if (owner_ == Owner::TAP_CONTROL) {
+    // Prevent the knob's old position from immediately overriding tap tempo.
     const uint16_t difference = adc > capturedAdc_ ? adc - capturedAdc_ : capturedAdc_ - adc;
     if (difference < kTakeoverThresholdAdc) {
       return false;
