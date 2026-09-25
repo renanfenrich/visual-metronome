@@ -1,9 +1,9 @@
 # Architecture
 
-The `Tempo`, `Clock`, and `Pattern` modules are small C++ domain models with
-no Arduino headers. `main.cpp` owns GPIO and calls `Clock::update(micros())`.
-This keeps musical rules testable on the host and prevents them from being
-coupled to `digitalWrite()`.
+The `Tempo`, `Clock`, `Pattern`, and `BeatSequence` modules are small C++
+domain models with no Arduino headers. `main.cpp` owns GPIO and calls
+`Clock::update(micros())`. This keeps musical rules testable on the host and
+prevents them from being coupled to `digitalWrite()`.
 
 G0's one-time LED indication remains non-blocking and separate from the G1
 clock. `Tempo::intervalUs()` uses integer arithmetic: `60,000,000 / BPM`.
@@ -31,5 +31,10 @@ window to less than 2^31 microseconds, which bounds G1's 240 BPM catch-up to
 
 Deadline comparisons use `static_cast<int32_t>(now_us - deadline_us) >= 0`,
 which is safe across the `uint32_t micros()` rollover as long as polling stays
-inside that half-wrap window. The pattern model remains independent of clock
-events until G2.
+inside that half-wrap window.
+
+`BeatSequence` starts inactive at its downbeat position. After G0 turns every
+LED off, `main.cpp` starts the clock; its first event activates position zero
+(D2). Subsequent events advance D3, D4, D5 and wrap to D2. A delayed clock
+poll advances the sequence with the full returned count using modular
+arithmetic, so a four-beat catch-up preserves the current position.
