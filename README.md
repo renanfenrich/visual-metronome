@@ -4,7 +4,7 @@ An Arduino Uno visual metronome foundation for musicians who cannot rely on
 headphone monitoring. G0 uses an Uno, four LEDs, four current-limiting
 resistors, a breadboard, and jumper wires.
 
-## G4 scope
+## G5 scope
 
 G0 establishes PlatformIO, a host-testable musical domain, Uno firmware that
 initializes D2-D5, a brief non-blocking startup LED check, and documentation.
@@ -12,8 +12,10 @@ G1 adds a host-testable deterministic tempo clock. G2 adds a four-step visual
 sequence: after the sanity check, the first clock event lights D2, followed by
 D3, D4, D5, then D2 again. G3 samples the A0 potentiometer every 25 ms and
 maps it to a stable 40--240 BPM range. G4 adds active-low D6 Start/Stop and D7
-Tap Tempo buttons with 30 ms non-blocking debounce. It does not add D8,
-alternate time signatures, persistence, audio, MIDI, or gestures.
+Tap Tempo buttons with 30 ms non-blocking debounce. G5 adds an active-low D8
+mode button that cycles 4/4 and 3/4. It does not add 5/4, 6/8, or 7/8: those
+require G6's eight-LED hardware expansion. G5 also does not add persistence,
+audio, MIDI, or gestures.
 
 ## Architecture
 

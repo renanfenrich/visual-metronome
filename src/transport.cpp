@@ -19,6 +19,10 @@ void Transport::setTempo(const Tempo& tempo, uint32_t nowUs) {
   clock_.setTempo(tempo, nowUs);
 }
 
+void Transport::setPattern(const Pattern& pattern) {
+  sequence_.setPattern(pattern);
+}
+
 uint16_t Transport::update(uint32_t nowUs) {
   const uint16_t elapsedBeats = clock_.update(nowUs);
   sequence_.advance(elapsedBeats);

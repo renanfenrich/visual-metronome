@@ -13,6 +13,7 @@ class Transport {
 
   bool toggle(uint32_t nowUs);
   void setTempo(const Tempo& tempo, uint32_t nowUs);
+  void setPattern(const Pattern& pattern);
   uint16_t update(uint32_t nowUs);
   bool running() const;
   const BeatSequence& sequence() const;

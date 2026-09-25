@@ -21,6 +21,11 @@ void BeatSequence::reset() {
   active_ = false;
 }
 
+void BeatSequence::setPattern(const Pattern& pattern) {
+  pattern_ = pattern;
+  reset();
+}
+
 bool BeatSequence::active() const {
   return active_;
 }

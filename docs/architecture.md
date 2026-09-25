@@ -61,3 +61,12 @@ sequence at the current tap without changing BPM. Accepted taps set TAP_CONTROL
 and capture the current A0 ADC reading. Potentiometer samples continue, but
 only movement of at least 12 ADC counts returns POTENTIOMETER_CONTROL; its
 existing 2-BPM hysteresis then applies.
+
+G5 adds a pure `TimeSignature` domain model that cycles 4/4 (four steps) and
+3/4 (three steps). It supplies a `Pattern` to `Transport`, which resets the
+`BeatSequence` without changing the clock or tempo. On a mode change, firmware
+turns all LEDs off; when running, the next existing clock deadline selects Beat
+1/D2 without an artificial immediate beat. When stopped, the transport remains
+stopped and its next start still begins at Beat 1. D5 is therefore never
+selected in 3/4. Signatures needing more than four visual positions (5/4, 6/8,
+and 7/8) are deferred to G6's eight-LED hardware.
