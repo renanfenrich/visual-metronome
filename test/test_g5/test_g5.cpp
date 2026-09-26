@@ -15,7 +15,7 @@ void test_default_mode_is_four_four_and_cycles() {
   TEST_ASSERT_EQUAL(metronome::TimeSignature::Mode::THREE_FOUR, signature.mode());
   TEST_ASSERT_EQUAL_UINT8(3, signature.pattern().steps());
   signature.cycle();
-  TEST_ASSERT_EQUAL(metronome::TimeSignature::Mode::FOUR_FOUR, signature.mode());
+  TEST_ASSERT_EQUAL(metronome::TimeSignature::Mode::FIVE_FOUR, signature.mode());
 }
 
 void test_active_low_mode_press_switches_to_three_four_after_debounce() {
