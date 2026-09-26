@@ -19,6 +19,7 @@ class TimeSignature {
   TimeSignature();
 
   void cycle();
+  void setMode(Mode mode);
   Mode mode() const;
   Pattern pattern() const;
   const char* label() const;

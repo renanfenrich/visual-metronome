@@ -6,9 +6,8 @@ Start/Stop, Tap Tempo, and 3/4, 4/4, 5/4, 6/8, and 7/8 mode selection.
 
 ## Current status
 
-G0 through G6C are implemented. G0 hardware validation covered the original
-four-LED wiring; the D9-D12 expansion still needs visual confirmation on the
-assembled eight-LED prototype.
+G0 through G6C are complete. G7's EEPROM journal implementation is ready for
+hardware persistence validation.
 
 - G0 - Repository/bootstrap and four-LED hardware smoke test
 - G1 - Deterministic tempo clock
@@ -20,6 +19,8 @@ assembled eight-LED prototype.
 - G6B - Eight-LED hardware and binary beat rendering
 - G6C - Non-blocking accent-strength rendering (implementation, software, and
   human physical visual validation complete)
+- G7 - EEPROM active-preset journal (implementation and native validation;
+  hardware persistence validation pending)
 
 ## Hardware
 

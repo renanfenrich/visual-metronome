@@ -24,6 +24,12 @@ void TimeSignature::cycle() {
   }
 }
 
+void TimeSignature::setMode(Mode mode) {
+  if (static_cast<uint8_t>(mode) <= static_cast<uint8_t>(Mode::SEVEN_EIGHT)) {
+    mode_ = mode;
+  }
+}
+
 TimeSignature::Mode TimeSignature::mode() const {
   return mode_;
 }

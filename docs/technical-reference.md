@@ -23,7 +23,7 @@ excluded from host tests because it owns Arduino APIs.
 `src/main.cpp` is the hardware adapter. It reads GPIO and A0, obtains time,
 and writes LEDs. Classes such as `Tempo`, `Clock`, `Pattern`, `BeatSequence`,
 `Debouncer`, `TapTempo`, `TempoControl`, `Transport`, `TimeSignature`, and
-`VisualRenderer` do
+`VisualRenderer`, and `PresetCodec` do
 not include Arduino headers. Keep new musical rules in those testable classes;
 keep pin access and Arduino-specific presentation in `main.cpp`.
 
@@ -68,6 +68,12 @@ the LEDs; a mode change keeps its existing clock deadline and BPM. LED 8/D12
 is reserved: it participates in startup and global clears but never receives a
 current rhythmic pulse.
 
+G7 loads the newest valid EEPROM journal slot before the startup sanity check.
+The active preset contains BPM and time signature only. A changed BPM or mode
+is committed after two seconds of quiet time; transport events never write
+EEPROM. Invalid data falls back to defaults, while a newer schema disables
+writes to avoid destructive downgrade.
+
 ## Deliberate trade-offs
 
 | Decision | Benefit | Cost / implication |
@@ -79,7 +85,7 @@ current rhythmic pulse.
 | ADC hysteresis | Reduces analog-input jitter. | Small knob movements do not change BPM. |
 | Potentiometer pickup | Prevents a parked knob from instantly undoing tap tempo. | The knob must move 12 ADC counts before it retakes control. |
 | Eight duration-coded LEDs | Covers current 3- through 7-step patterns with visible accents. | LED 8 remains reserved; all G6C physical visual acceptance checks passed by human observation. |
-| No persistence or external sync | Keeps the firmware focused and easy to reason about. | Power cycles lose BPM and there is no MIDI/audio integration. |
+| Two-slot EEPROM journal | Survives a torn save and reduces wear through alternating slots and `EEPROM.update`. | Only the last BPM and signature persist; no MIDI/audio integration. |
 
 ## Contributor guidance
 
