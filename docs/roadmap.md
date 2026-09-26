@@ -8,8 +8,8 @@
 - [x] G5 - Time-signature mode selection
 - [x] G6A - Grouped rhythmic patterns
 - [x] G6B - Eight LEDs and binary beat rendering
-- [x] G6C - Accent-strength rendering (software validation complete; physical
-  visual validation pending)
+- [x] G6C - Accent-strength rendering (implementation and software validation
+  complete; physical visual validation pending human verification)
 - [ ] G7 - EEPROM presets
 - [ ] G8 - Experimental microphone tap detection
 - [ ] G9 - MIDI Clock
@@ -17,4 +17,5 @@
 G0 through G6C are implemented. G6A adds grouped 3/4, 4/4, 5/4, 6/8, and 7/8
 patterns; G6B maps their positions onto eight LEDs; G6C uses non-blocking
 150/100/60 ms PRIMARY/SECONDARY/NONE pulses, capped at half of the current beat
-interval. G6 is not fully complete until physical visual validation passes.
+interval. G6 physical visual validation is pending human verification, so G6
+overall is not yet complete.

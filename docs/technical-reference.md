@@ -78,7 +78,7 @@ current rhythmic pulse.
 | Three tap intervals | Smooths an uneven tap without retaining stale tempo history. | A new sequence needs two taps before it produces BPM. |
 | ADC hysteresis | Reduces analog-input jitter. | Small knob movements do not change BPM. |
 | Potentiometer pickup | Prevents a parked knob from instantly undoing tap tempo. | The knob must move 12 ADC counts before it retakes control. |
-| Eight duration-coded LEDs | Covers current 3- through 7-step patterns with visible accents. | LED 8 remains reserved; physical visual validation is still pending. |
+| Eight duration-coded LEDs | Covers current 3- through 7-step patterns with visible accents. | LED 8 remains reserved; physical visual validation is pending human verification. |
 | No persistence or external sync | Keeps the firmware focused and easy to reason about. | Power cycles lose BPM and there is no MIDI/audio integration. |
 
 ## Contributor guidance

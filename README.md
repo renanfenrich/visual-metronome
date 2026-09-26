@@ -18,8 +18,8 @@ assembled eight-LED prototype.
 - G5 - Time-signature mode selection
 - G6A - Grouped rhythmic patterns for 3/4, 4/4, 5/4, 6/8, and 7/8
 - G6B - Eight-LED hardware and binary beat rendering
-- G6C - Non-blocking accent-strength rendering (software validated; physical
-  visual validation pending)
+- G6C - Non-blocking accent-strength rendering (implementation and software
+  validation complete; physical visual validation pending human verification)
 
 ## Hardware
 
