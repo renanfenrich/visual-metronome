@@ -6,7 +6,7 @@ Start/Stop, Tap Tempo, and 3/4, 4/4, 5/4, 6/8, and 7/8 mode selection.
 
 ## Current status
 
-G0 through G6B are implemented. G0 hardware validation covered the original
+G0 through G6C are implemented. G0 hardware validation covered the original
 four-LED wiring; the D9-D12 expansion still needs visual confirmation on the
 assembled eight-LED prototype.
 
@@ -18,6 +18,8 @@ assembled eight-LED prototype.
 - G5 - Time-signature mode selection
 - G6A - Grouped rhythmic patterns for 3/4, 4/4, 5/4, 6/8, and 7/8
 - G6B - Eight-LED hardware and binary beat rendering
+- G6C - Non-blocking accent-strength rendering (software validated; physical
+  visual validation pending)
 
 ## Hardware
 
@@ -39,7 +41,13 @@ The three buttons use active-low `INPUT_PULLUP` wiring to GND. See
 At startup the firmware performs a brief non-blocking LED sanity check, then
 starts the metronome automatically.
 
-Each clock event lights exactly one LED. The supported sequences are:
+Each clock event lights exactly one LED. A `VisualRenderer` keeps that LED on
+for a non-blocking accent pulse: PRIMARY is 150 ms, SECONDARY is 100 ms, and
+NONE is 60 ms. PWM brightness is deliberately not used because D2-D5 and
+D9-D12 are not all PWM-capable. Every pulse is capped at half the current beat
+interval, so it cannot extend into the next rhythmic position.
+
+The supported sequences are:
 
 ```text
 D2 -> D3 -> D4 -> D5 -> D2     (4/4)
@@ -49,8 +57,10 @@ D2 -> D3 -> D4 -> D5 -> D9 -> D10 -> D2 (6/8)
 D2 -> D3 -> D4 -> D5 -> D9 -> D10 -> D11 -> D2 (7/8)
 ```
 
-LED 8 (D12) remains off for all current signatures. G6B uses binary LEDs only;
-accent strength remains deferred to G6C.
+LED 8 (D12) remains off for all current signatures, while still taking part in
+the startup sanity check and global clear operations. If a delayed loop catches
+up across multiple beats, the sequence catches up musically and only its final
+current position is rendered; historical pulses are not replayed.
 
 The potentiometer maps A0 to 40-240 BPM with hysteresis. Tap Tempo can take
 temporary ownership of tempo, and the potentiometer resumes control only after
