@@ -1,6 +1,6 @@
 # Technical reference
 
-This document is a quick orientation for contributors. It describes the G6C
+This document is a quick orientation for contributors. It describes the G7
 implementation; planned roadmap items are not part of the current contract.
 
 ## Technology stack
@@ -81,6 +81,10 @@ It also confirmed that Start/Stop state and active visual state are transient,
 while normal timing, Tap Tempo, potentiometer pickup, and rapid input remain
 responsive after restoration. Physical corruption injection and torn-record
 manipulation were not performed; deterministic native tests cover those cases.
+
+G8A records a future microphone transient-detector design only. It will require
+confirmed hardware and human signal measurements before implementation. Its
+logical event feeds `TapTempo`; it never calculates BPM. See the [G8 design](g8-microphone-tap-design.md).
 
 ## Deliberate trade-offs
 

@@ -21,6 +21,8 @@ validation and human-observed physical validation on the Arduino Uno.
   human physical visual validation complete)
 - G7 - EEPROM active-preset journal (implementation, software validation, and
   human-observed physical EEPROM validation complete)
+- G8A - Microphone transient-detector design and characterization plan
+  (complete; human signal characterization pending)
 
 ## Hardware
 
@@ -95,7 +97,9 @@ during meter playback.
 The musical and control logic is kept in Arduino-independent C++ modules so it
 can be tested natively. Current domain modules include `Tempo`, `Clock`,
 `Pattern`, `BeatSequence`, `BpmInput`, `Debouncer`, `TapTempo`,
-`TempoControl`, `Transport`, and `TimeSignature`.
+`TempoControl`, `Transport`, and `TimeSignature`. G8A defines a future,
+Arduino-independent `MicTapDetector` that will emit logical taps into the
+existing `TapTempo` path; it does not add microphone firmware or hardware yet.
 
 `main.cpp` owns Arduino-specific GPIO, ADC sampling, and calls to `micros()`
 and `millis()`.
