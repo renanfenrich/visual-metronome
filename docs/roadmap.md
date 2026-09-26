@@ -10,7 +10,7 @@
 - [x] G6B - Eight LEDs and binary beat rendering
 - [x] G6C - Accent-strength rendering (implementation, software validation,
   firmware upload, and human physical visual validation complete)
-- [ ] G7 - EEPROM presets
+- [ ] G7 - EEPROM presets (design complete; implementation pending)
 - [ ] G8 - Experimental microphone tap detection
 - [ ] G9 - MIDI Clock
 
@@ -21,3 +21,7 @@ interval. Human observation passed every G6C acceptance check, including all
 eight LEDs at startup, accent differentiation, grouped meters, high-BPM pulse
 separation, control responsiveness, mode/stop clearing, and LED 8 reservation.
 G6 is complete.
+
+G7's persistence contract is defined in the
+[EEPROM persistence design](g7-eeprom-persistence-design.md). It deliberately
+contains no EEPROM I/O implementation yet.

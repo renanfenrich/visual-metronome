@@ -82,3 +82,10 @@ scheduled. On catch-up, `BeatSequence` advances by every elapsed deadline but
 only the final current position receives a visual pulse; missed historical
 pulses are never replayed. LED 8 remains reserved for the sanity check and
 global clears, not current meter playback.
+
+G7 is beginning with an EEPROM-persistence design only. Its active preset will
+contain BPM and time-signature mode, while transport and visual state remain
+transient. The planned record codec is Arduino-independent and will validate
+two CRC-protected journal slots before a thin Arduino EEPROM adapter applies
+the result. See [the G7 persistence design](g7-eeprom-persistence-design.md)
+for the layout, write policy, fallback, and migration contract.
