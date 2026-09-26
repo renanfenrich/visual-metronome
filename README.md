@@ -86,6 +86,11 @@ platformio device monitor -b 9600
 The first command builds Uno firmware, the second runs host tests, the third
 uploads it, and the last opens the serial monitor.
 
+## Development
+
+See the [development workflow](docs/development-workflow.md) for the required
+goal-branch, validation, pull-request, review, and merge process.
+
 ## Roadmap
 
 Full status: [roadmap](docs/roadmap.md).
