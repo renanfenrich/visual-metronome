@@ -8,7 +8,13 @@ namespace metronome {
 
 class TimeSignature {
  public:
-  enum class Mode : uint8_t { FOUR_FOUR, THREE_FOUR };
+  enum class Mode : uint8_t {
+    THREE_FOUR,
+    FOUR_FOUR,
+    FIVE_FOUR,
+    SIX_EIGHT,
+    SEVEN_EIGHT,
+  };
 
   TimeSignature();
 
