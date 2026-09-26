@@ -2,6 +2,7 @@
 
 #include "config.h"
 #include "debouncer.h"
+#include "eeprom_journal.h"
 #include "pattern.h"
 #include "tap_tempo.h"
 #include "tempo.h"
@@ -25,6 +26,7 @@ metronome::Debouncer tapButton;
 metronome::Debouncer modeButton;
 metronome::TapTempo tapTempo;
 metronome::VisualRenderer renderer;
+metronome::EepromJournal journal;
 unsigned long lastBpmSampleAt = 0;
 uint16_t lastAdc = 0;
 
@@ -52,6 +54,7 @@ void setBpm(uint16_t bpm, bool fromTap, uint32_t nowUs) {
   Serial.print(F("BPM: "));
   Serial.print(tempo.bpm());
   Serial.println(fromTap ? F(" (tap)") : F(" (pot)"));
+  journal.markDirty({tempo.bpm(), timeSignature.mode()}, millis());
 }
 }  // namespace
 
@@ -66,11 +69,22 @@ void setup() {
   pinMode(metronome::kModePin, INPUT_PULLUP);
   setLeds(LOW);
   lastAdc = analogRead(metronome::kBpmPin);
+  metronome::Preset preset;
+  journal.begin(preset);
+  tempo.setBpm(preset.bpm);
+  timeSignature.setMode(preset.mode);
+  transport.setTempo(tempo, micros());
+  transport.setPattern(timeSignature.pattern());
+  // The saved value is active until the physical knob makes a meaningful move.
+  tempoControl.acceptTap(preset.bpm, lastAdc);
 
   Serial.println(F("Visual Metronome"));
   Serial.println(F("Firmware: 0.1.0"));
-  Serial.println(F("Goal: G6B"));
+  Serial.println(F("Goal: G7"));
   Serial.println(F("Status: READY"));
+  if (journal.futureSchemaDetected()) {
+    Serial.println(F("EEPROM: newer schema; persistence disabled"));
+  }
 
   setLeds(HIGH);
   // Keep startup verification non-blocking so the normal loop remains responsive.
@@ -125,7 +139,10 @@ void loop() {
     setLeds(LOW);
     Serial.print(F("Signature: "));
     Serial.println(timeSignature.label());
+    journal.markDirty({tempo.bpm(), timeSignature.mode()}, nowMs);
   }
+
+  journal.update(nowMs);
 
   // Process input first so a state change cannot be followed by a stale beat.
   // Catch-up advances the sequence fully but renders only its final position.

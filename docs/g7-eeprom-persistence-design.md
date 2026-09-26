@@ -107,9 +107,10 @@ accepts and produces fixed 16-byte arrays and exposes pure operations to:
 - decide whether a candidate needs saving; and
 - migrate a validated prior schema to the current model.
 
-Native tests will cover byte-exact serialization, CRC failures, each invalid
-field, erased and torn records, newest-slot selection including generation
-rollover, defaults, no-op save decisions, and migration behavior. A thin
-Arduino-only adapter will provide EEPROM read/update/read-back and the quiet
-timer; it contains no serialization or validation rules. G7 implementation
-will add that adapter only after the codec tests exist.
+Native tests cover byte-exact serialization, CRC failures, invalid fields,
+erased and torn records, newest-slot selection including generation rollover,
+defaults, and future-schema protection. `EepromJournal` is the thin
+Arduino-only adapter that provides EEPROM read/update/read-back and the quiet
+timer; it contains no serialization or validation rules. Human-observed Uno
+physical persistence validation passed; hardware corruption injection and
+torn-record manipulation remain covered by native tests only.

@@ -27,6 +27,13 @@ void test_active_low_mode_press_switches_to_three_four_after_debounce() {
   TEST_ASSERT_EQUAL(metronome::TimeSignature::Mode::THREE_FOUR, signature.mode());
 }
 
+void test_mode_can_restore_a_valid_preset_value() {
+  metronome::TimeSignature signature;
+  signature.setMode(metronome::TimeSignature::Mode::SIX_EIGHT);
+  TEST_ASSERT_EQUAL(metronome::TimeSignature::Mode::SIX_EIGHT, signature.mode());
+  TEST_ASSERT_EQUAL_UINT8(6, signature.pattern().steps());
+}
+
 void test_four_and_three_step_sequences_wrap_without_d5_in_three_four() {
   metronome::BeatSequence four(metronome::Pattern(4, 0));
   metronome::BeatSequence three(metronome::Pattern(3, 0));
@@ -94,6 +101,7 @@ void setup() {
   UNITY_BEGIN();
   RUN_TEST(test_default_mode_is_four_four_and_cycles);
   RUN_TEST(test_active_low_mode_press_switches_to_three_four_after_debounce);
+  RUN_TEST(test_mode_can_restore_a_valid_preset_value);
   RUN_TEST(test_four_and_three_step_sequences_wrap_without_d5_in_three_four);
   RUN_TEST(test_mode_change_resets_running_sequence_without_changing_clock_or_bpm);
   RUN_TEST(test_mode_change_while_stopped_preserves_stopped_state_and_first_beat);
@@ -106,6 +114,7 @@ int main() {
   UNITY_BEGIN();
   RUN_TEST(test_default_mode_is_four_four_and_cycles);
   RUN_TEST(test_active_low_mode_press_switches_to_three_four_after_debounce);
+  RUN_TEST(test_mode_can_restore_a_valid_preset_value);
   RUN_TEST(test_four_and_three_step_sequences_wrap_without_d5_in_three_four);
   RUN_TEST(test_mode_change_resets_running_sequence_without_changing_clock_or_bpm);
   RUN_TEST(test_mode_change_while_stopped_preserves_stopped_state_and_first_beat);
