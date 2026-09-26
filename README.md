@@ -18,8 +18,8 @@ assembled eight-LED prototype.
 - G5 - Time-signature mode selection
 - G6A - Grouped rhythmic patterns for 3/4, 4/4, 5/4, 6/8, and 7/8
 - G6B - Eight-LED hardware and binary beat rendering
-- G6C - Non-blocking accent-strength rendering (implementation and software
-  validation complete; physical visual validation pending human verification)
+- G6C - Non-blocking accent-strength rendering (implementation, software, and
+  human physical visual validation complete)
 
 ## Hardware
 
@@ -65,6 +65,15 @@ current position is rendered; historical pulses are not replayed.
 The potentiometer maps A0 to 40-240 BPM with hysteresis. Tap Tempo can take
 temporary ownership of tempo, and the potentiometer resumes control only after
 meaningful physical movement.
+
+## G6C physical visual validation
+
+Human observation passed on the running Arduino hardware: the startup check
+lit all eight LEDs; 4/4 differentiated PRIMARY from NONE; 5/4, 6/8, and 7/8
+read as 3+2, 3+3, and 2+2+3; SECONDARY was distinct from NONE and PRIMARY;
+high-BPM pulses did not overlap; Start/Stop and mode changes cleared LEDs; Tap
+Tempo and potentiometer control remained responsive; and LED 8 stayed unused
+during meter playback.
 
 ## Architecture
 
