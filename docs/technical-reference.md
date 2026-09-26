@@ -1,13 +1,13 @@
 # Technical reference
 
-This document is a quick orientation for contributors. It describes the G5
+This document is a quick orientation for contributors. It describes the G6B
 implementation; planned roadmap items are not part of the current contract.
 
 ## Technology stack
 
 | Layer | Choice | Responsibility |
 | --- | --- | --- |
-| Target hardware | Arduino Uno (ATmega328P) | Reads controls and drives four LEDs. |
+| Target hardware | Arduino Uno (ATmega328P) | Reads controls and drives eight LEDs. |
 | Firmware framework | Arduino | Provides GPIO, ADC, `millis()`, `micros()`, and serial output. |
 | Build system | PlatformIO Core | Builds the Uno firmware and host-test environment. |
 | Application language | C++ | Implements firmware orchestration and hardware-independent domain models. |
@@ -66,7 +66,7 @@ therefore preserves musical position instead of silently losing beats.
 | Three tap intervals | Smooths an uneven tap without retaining stale tempo history. | A new sequence needs two taps before it produces BPM. |
 | ADC hysteresis | Reduces analog-input jitter. | Small knob movements do not change BPM. |
 | Potentiometer pickup | Prevents a parked knob from instantly undoing tap tempo. | The knob must move 12 ADC counts before it retakes control. |
-| Four LEDs | Keeps G5 wiring and rendering simple. | Only 4/4 and 3/4 are supported; larger signatures require G6 hardware. |
+| Eight binary LEDs | Covers current 3- through 7-step patterns simply. | LED 8 remains unused; accent-strength display is deferred to G6C. |
 | No persistence or external sync | Keeps the firmware focused and easy to reason about. | Power cycles lose BPM and there is no MIDI/audio integration. |
 
 ## Contributor guidance

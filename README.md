@@ -1,29 +1,30 @@
 # Visual Metronome
 
 An Arduino Uno visual metronome for musicians who cannot rely on headphone
-monitoring. The current prototype has four beat LEDs, potentiometer BPM control,
-Start/Stop, Tap Tempo, and 3/4 / 4/4 mode selection.
+monitoring. The current prototype has eight beat LEDs, potentiometer BPM control,
+Start/Stop, Tap Tempo, and 3/4, 4/4, 5/4, 6/8, and 7/8 mode selection.
 
 ## Current status
 
-G0 through G5 are complete and physically validated.
+G0 through G6B are implemented. G0 hardware validation covered the original
+four-LED wiring; the D9-D12 expansion still needs visual confirmation on the
+assembled eight-LED prototype.
 
 - G0 - Repository/bootstrap and four-LED hardware smoke test
 - G1 - Deterministic tempo clock
 - G2 - Four-LED visual 4/4 sequence
 - G3 - Potentiometer BPM control (40-240 BPM)
 - G4 - Start/Stop and Tap Tempo controls
-- G5 - Time-signature mode selection between 4/4 and 3/4
-
-G6 is next and is planned to expand the hardware to eight LEDs before adding
-5/4, 6/8, 7/8, accents, and grouping patterns.
+- G5 - Time-signature mode selection
+- G6A - Grouped rhythmic patterns for 3/4, 4/4, 5/4, 6/8, and 7/8
+- G6B - Eight-LED hardware and binary beat rendering
 
 ## Hardware
 
 Current prototype:
 
 - Arduino Uno
-- 4 beat LEDs on D2-D5, each with its own current-limiting resistor
+- 8 beat LEDs: D2-D5 and D9-D12, each with its own current-limiting resistor
 - Start/Stop button on D6
 - Tap Tempo button on D7
 - Mode button on D8
@@ -38,19 +39,18 @@ The three buttons use active-low `INPUT_PULLUP` wiring to GND. See
 At startup the firmware performs a brief non-blocking LED sanity check, then
 starts the metronome automatically.
 
-In 4/4, the visual sequence is:
+Each clock event lights exactly one LED. The supported sequences are:
 
 ```text
-D2 -> D3 -> D4 -> D5 -> D2
+D2 -> D3 -> D4 -> D5 -> D2     (4/4)
+D2 -> D3 -> D4 -> D2           (3/4)
+D2 -> D3 -> D4 -> D5 -> D9 -> D2 (5/4)
+D2 -> D3 -> D4 -> D5 -> D9 -> D10 -> D2 (6/8)
+D2 -> D3 -> D4 -> D5 -> D9 -> D10 -> D11 -> D2 (7/8)
 ```
 
-In 3/4:
-
-```text
-D2 -> D3 -> D4 -> D2
-```
-
-D5 remains off in 3/4.
+LED 8 (D12) remains off for all current signatures. G6B uses binary LEDs only;
+accent strength remains deferred to G6C.
 
 The potentiometer maps A0 to 40-240 BPM with hysteresis. Tap Tempo can take
 temporary ownership of tempo, and the potentiometer resumes control only after
