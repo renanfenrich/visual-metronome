@@ -65,11 +65,9 @@ and capture the current A0 ADC reading. Potentiometer samples continue, but
 only movement of at least 12 ADC counts returns POTENTIOMETER_CONTROL; its
 existing 2-BPM hysteresis then applies.
 
-G5 adds a pure `TimeSignature` domain model that cycles 4/4 (four steps) and
-3/4 (three steps). It supplies a `Pattern` to `Transport`, which resets the
-`BeatSequence` without changing the clock or tempo. On a mode change, firmware
-turns all LEDs off; when running, the next existing clock deadline selects Beat
-1/D2 without an artificial immediate beat. When stopped, the transport remains
-stopped and its next start still begins at Beat 1. D5 is therefore never
-selected in 3/4. Signatures needing more than four visual positions (5/4, 6/8,
-and 7/8) are deferred to G6's eight-LED hardware.
+G6A/G6B extends `TimeSignature` to 3/4 through 7/8 and keeps grouping/accent
+data in `Pattern`. `main.cpp` alone maps the resulting sequence position to the
+central eight-pin LED array (D2-D5, D9-D12), lighting one LED and clearing the
+rest. A mode change resets the sequence without changing clock or tempo, clears
+all LEDs, and lets the next existing deadline emit the new position zero. The
+renderer intentionally ignores accent strength until G6C.

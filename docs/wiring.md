@@ -1,4 +1,4 @@
-# G5 wiring
+# G6B wiring
 
 Use one current-limiting resistor for each LED:
 
@@ -8,14 +8,20 @@ Use one current-limiting resistor for each LED:
 | D3 | Beat 2 LED -> resistor -> GND |
 | D4 | Beat 3 LED -> resistor -> GND |
 | D5 | Beat 4 LED -> resistor -> GND |
+| D9 | Beat 5 LED -> resistor -> GND |
+| D10 | Beat 6 LED -> resistor -> GND |
+| D11 | Beat 7 LED -> resistor -> GND |
+| D12 | Beat 8 LED -> resistor -> GND |
 
 Use approximately 220-470 ohm resistors for this prototype. Respect LED
 polarity: the anode connects toward the Arduino pin and the cathode toward the
 resistor/GND path. Verify the exact resistor values before assembly; they must
 not be inferred from photographs.
 
-After the startup sanity check, all four LEDs are off until the first clock
-deadline. Then exactly one LED is on at a time in D2, D3, D4, D5 order.
+After the startup sanity check, all eight LEDs are off until the first clock
+deadline. Then exactly one LED is on at a time. 3/4 uses LEDs 1-3, 4/4 uses
+LEDs 1-4, 5/4 uses LEDs 1-5, 6/8 uses LEDs 1-6, and 7/8 uses LEDs 1-7. LED 8
+(D12) remains off for every current signature.
 
 | Arduino pin | Connection |
 | --- | --- |
@@ -26,5 +32,5 @@ deadline. Then exactly one LED is on at a time in D2, D3, D4, D5 order.
 
 D6, D7, and D8 use `INPUT_PULLUP`: an unpressed button reads HIGH and a press
 reads LOW. Firmware debounces each input for 30 ms without `delay()`. D8 cycles
-between 4/4 and 3/4. In 3/4, D5 remains off; 5/4, 6/8, and 7/8 are deferred to
-G6 because this hardware has only four beat LEDs.
+through 4/4, 3/4, 5/4, 6/8, and 7/8. It resets the sequence while preserving
+transport state, tempo, and the pending clock deadline.

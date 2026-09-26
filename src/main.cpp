@@ -61,7 +61,7 @@ void setup() {
 
   Serial.println(F("Visual Metronome"));
   Serial.println(F("Firmware: 0.1.0"));
-  Serial.println(F("Goal: G5"));
+  Serial.println(F("Goal: G6B"));
   Serial.println(F("Status: READY"));
 
   setLeds(HIGH);
