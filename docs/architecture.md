@@ -66,8 +66,19 @@ only movement of at least 12 ADC counts returns POTENTIOMETER_CONTROL; its
 existing 2-BPM hysteresis then applies.
 
 G6A/G6B extends `TimeSignature` to 3/4 through 7/8 and keeps grouping/accent
-data in `Pattern`. `main.cpp` alone maps the resulting sequence position to the
-central eight-pin LED array (D2-D5, D9-D12), lighting one LED and clearing the
-rest. A mode change resets the sequence without changing clock or tempo, clears
-all LEDs, and lets the next existing deadline emit the new position zero. The
-renderer intentionally ignores accent strength until G6C.
+data in `Pattern`. G6C adds the Arduino-independent `VisualRenderer`, which
+tracks one LED pulse lifecycle: PRIMARY is 150 ms, SECONDARY 100 ms, and NONE
+60 ms. It caps each pulse at half the current beat interval, using timestamp
+deadlines and no blocking calls. PWM brightness is not used because the eight
+pins do not share PWM capability.
+
+`main.cpp` maps the resulting sequence position to the central eight-pin LED
+array (D2-D5, D9-D12) and applies the renderer state to GPIO. A new pulse
+replaces an older one. A mode change cancels any pulse, clears all LEDs, resets
+the sequence without changing clock or tempo, and lets the next existing
+deadline emit the new position zero. Stop and tempo changes also cancel a
+current pulse, preventing stale output or an overlap after a new deadline is
+scheduled. On catch-up, `BeatSequence` advances by every elapsed deadline but
+only the final current position receives a visual pulse; missed historical
+pulses are never replayed. LED 8 remains reserved for the sanity check and
+global clears, not current meter playback.

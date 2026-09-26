@@ -1,6 +1,6 @@
 # Technical reference
 
-This document is a quick orientation for contributors. It describes the G6B
+This document is a quick orientation for contributors. It describes the G6C
 implementation; planned roadmap items are not part of the current contract.
 
 ## Technology stack
@@ -22,7 +22,8 @@ excluded from host tests because it owns Arduino APIs.
 
 `src/main.cpp` is the hardware adapter. It reads GPIO and A0, obtains time,
 and writes LEDs. Classes such as `Tempo`, `Clock`, `Pattern`, `BeatSequence`,
-`Debouncer`, `TapTempo`, `TempoControl`, `Transport`, and `TimeSignature` do
+`Debouncer`, `TapTempo`, `TempoControl`, `Transport`, `TimeSignature`, and
+`VisualRenderer` do
 not include Arduino headers. Keep new musical rules in those testable classes;
 keep pin access and Arduino-specific presentation in `main.cpp`.
 
@@ -37,6 +38,7 @@ keep pin access and Arduino-specific presentation in `main.cpp`.
 | Downbeat | The first position in a `Pattern`; currently position zero/D2. |
 | Pattern | The number of visual positions and its downbeat. |
 | Beat sequence | The active pattern position that selects an LED. |
+| Visual renderer | Hardware-independent state machine for one accent pulse. |
 | Transport | The paired clock and beat sequence; it is running or stopped. |
 | Tap tempo | BPM derived from recent valid button-tap intervals. |
 | Potentiometer takeover | Returning control from tap tempo to the physical knob after meaningful movement. |
@@ -53,8 +55,18 @@ clock tick ensures a state change cannot immediately display a beat from the
 old state.
 
 When the clock reports one or more elapsed deadlines, `BeatSequence` advances
-by that exact count and the resulting position lights one LED. Delayed polling
-therefore preserves musical position instead of silently losing beats.
+by that exact count. `VisualRenderer` receives only the final current position
+and its `Pattern` accent, so delayed polling preserves musical position without
+rapidly replaying historical pulses.
+
+G6C represents accents through duration rather than PWM brightness: PRIMARY
+uses 150 ms, SECONDARY 100 ms, and NONE 60 ms. This works uniformly on all
+eight pins, unlike PWM. The renderer caps every duration at half the current
+beat interval and expires pulses through a rollover-safe timestamp comparison.
+Start/Stop, mode changes, and tempo changes cancel an active pulse and clear
+the LEDs; a mode change keeps its existing clock deadline and BPM. LED 8/D12
+is reserved: it participates in startup and global clears but never receives a
+current rhythmic pulse.
 
 ## Deliberate trade-offs
 
@@ -66,7 +78,7 @@ therefore preserves musical position instead of silently losing beats.
 | Three tap intervals | Smooths an uneven tap without retaining stale tempo history. | A new sequence needs two taps before it produces BPM. |
 | ADC hysteresis | Reduces analog-input jitter. | Small knob movements do not change BPM. |
 | Potentiometer pickup | Prevents a parked knob from instantly undoing tap tempo. | The knob must move 12 ADC counts before it retakes control. |
-| Eight binary LEDs | Covers current 3- through 7-step patterns simply. | LED 8 remains unused; accent-strength display is deferred to G6C. |
+| Eight duration-coded LEDs | Covers current 3- through 7-step patterns with visible accents. | LED 8 remains reserved; all G6C physical visual acceptance checks passed by human observation. |
 | No persistence or external sync | Keeps the firmware focused and easy to reason about. | Power cycles lose BPM and there is no MIDI/audio integration. |
 
 ## Contributor guidance

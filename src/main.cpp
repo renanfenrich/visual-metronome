@@ -8,6 +8,7 @@
 #include "tempo_control.h"
 #include "time_signature.h"
 #include "transport.h"
+#include "visual_renderer.h"
 
 namespace {
 
@@ -23,6 +24,7 @@ metronome::Debouncer startStopButton;
 metronome::Debouncer tapButton;
 metronome::Debouncer modeButton;
 metronome::TapTempo tapTempo;
+metronome::VisualRenderer renderer;
 unsigned long lastBpmSampleAt = 0;
 uint16_t lastAdc = 0;
 
@@ -32,15 +34,21 @@ void setLeds(uint8_t state) {
   }
 }
 
-void showBeat(uint8_t position) {
+void showPulse(uint8_t position, metronome::Accent accent, uint32_t nowUs,
+               uint32_t beatIntervalUs) {
+  renderer.startPulse(position, accent, nowUs, beatIntervalUs);
   for (uint8_t i = 0; i < metronome::kLedCount; ++i) {
-    digitalWrite(metronome::kLedPins[i], i == position ? HIGH : LOW);
+    digitalWrite(metronome::kLedPins[i], i == renderer.led() ? HIGH : LOW);
   }
 }
 
 void setBpm(uint16_t bpm, bool fromTap, uint32_t nowUs) {
   tempo.setBpm(bpm);
   transport.setTempo(tempo, nowUs);
+  // A tempo change moves the next deadline, so cancel rather than risk an
+  // existing pulse overlapping it.
+  renderer.cancel();
+  setLeds(LOW);
   Serial.print(F("BPM: "));
   Serial.print(tempo.bpm());
   Serial.println(fromTap ? F(" (tap)") : F(" (pot)"));
@@ -99,6 +107,7 @@ void loop() {
     if (transport.toggle(nowUs)) {
       Serial.println(F("Transport: RUNNING"));
     } else {
+      renderer.cancel();
       setLeds(LOW);
       Serial.println(F("Transport: STOPPED"));
     }
@@ -112,13 +121,18 @@ void loop() {
   if (!sanityActive && modePressed) {
     timeSignature.cycle();
     transport.setPattern(timeSignature.pattern());
+    renderer.cancel();
     setLeds(LOW);
     Serial.print(F("Signature: "));
     Serial.println(timeSignature.label());
   }
 
   // Process input first so a state change cannot be followed by a stale beat.
+  // Catch-up advances the sequence fully but renders only its final position.
   if (transport.update(nowUs) > 0) {
-    showBeat(transport.sequence().position());
+    showPulse(transport.sequence().position(), transport.sequence().accent(),
+              nowUs, transport.clock().intervalUs());
+  } else if (renderer.update(nowUs)) {
+    setLeds(LOW);
   }
 }

@@ -34,4 +34,8 @@ uint8_t BeatSequence::position() const {
   return position_;
 }
 
+Accent BeatSequence::accent() const {
+  return active_ ? pattern_.accentAt(position_) : Accent::NONE;
+}
+
 }  // namespace metronome

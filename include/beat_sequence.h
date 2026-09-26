@@ -17,6 +17,7 @@ class BeatSequence {
 
   bool active() const;
   uint8_t position() const;
+  Accent accent() const;
 
  private:
   Pattern pattern_;
