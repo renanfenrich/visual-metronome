@@ -74,6 +74,14 @@ is committed after two seconds of quiet time; transport events never write
 EEPROM. Invalid data falls back to defaults, while a newer schema disables
 writes to avoid destructive downgrade.
 
+Human-observed Uno validation passed: default fallback on empty/invalid EEPROM;
+BPM persistence; meter persistence; combined BPM-and-meter restoration; and
+retention of the prior committed preset when power interrupts the quiet period.
+It also confirmed that Start/Stop state and active visual state are transient,
+while normal timing, Tap Tempo, potentiometer pickup, and rapid input remain
+responsive after restoration. Physical corruption injection and torn-record
+manipulation were not performed; deterministic native tests cover those cases.
+
 ## Deliberate trade-offs
 
 | Decision | Benefit | Cost / implication |

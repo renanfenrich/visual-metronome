@@ -111,5 +111,6 @@ Native tests cover byte-exact serialization, CRC failures, invalid fields,
 erased and torn records, newest-slot selection including generation rollover,
 defaults, and future-schema protection. `EepromJournal` is the thin
 Arduino-only adapter that provides EEPROM read/update/read-back and the quiet
-timer; it contains no serialization or validation rules. Physical persistence
-validation remains required before G7 is complete.
+timer; it contains no serialization or validation rules. Human-observed Uno
+physical persistence validation passed; hardware corruption injection and
+torn-record manipulation remain covered by native tests only.

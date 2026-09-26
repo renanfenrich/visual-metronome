@@ -6,8 +6,8 @@ Start/Stop, Tap Tempo, and 3/4, 4/4, 5/4, 6/8, and 7/8 mode selection.
 
 ## Current status
 
-G0 through G6C are complete. G7's EEPROM journal implementation is ready for
-hardware persistence validation.
+G0 through G7 are complete. G7's EEPROM journal passed deterministic software
+validation and human-observed physical validation on the Arduino Uno.
 
 - G0 - Repository/bootstrap and four-LED hardware smoke test
 - G1 - Deterministic tempo clock
@@ -19,8 +19,8 @@ hardware persistence validation.
 - G6B - Eight-LED hardware and binary beat rendering
 - G6C - Non-blocking accent-strength rendering (implementation, software, and
   human physical visual validation complete)
-- G7 - EEPROM active-preset journal (implementation and native validation;
-  hardware persistence validation pending)
+- G7 - EEPROM active-preset journal (implementation, software validation, and
+  human-observed physical EEPROM validation complete)
 
 ## Hardware
 
@@ -66,6 +66,20 @@ current position is rendered; historical pulses are not replayed.
 The potentiometer maps A0 to 40-240 BPM with hysteresis. Tap Tempo can take
 temporary ownership of tempo, and the potentiometer resumes control only after
 meaningful physical movement.
+
+## G7 physical EEPROM validation
+
+Human observation on the Arduino Uno passed the G7 checks: an empty or invalid
+EEPROM booted with defaults; BPM and time-signature mode persisted separately
+and together after the two-second quiet period; an interrupted pre-commit
+change did not replace the prior preset; and rapid input remained responsive
+and non-blocking. Transport running/stopped state and active LED/pulse state
+remained transient across a power cycle. Tap Tempo and potentiometer pickup
+remained operational after restore, as did normal metronome behavior.
+
+This is physical behavior evidence only. Corruption injection and torn-record
+manipulation were not performed on hardware; those cases are covered by
+deterministic native tests.
 
 ## G6C physical visual validation
 
