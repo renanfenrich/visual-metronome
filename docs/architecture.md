@@ -90,3 +90,11 @@ Arduino-specific adapter that performs read/update/read-back commits after a
 two-second quiet period. It loads defaults for invalid records and refuses to
 write when a newer schema is detected. See [the G7 persistence
 design](g7-eeprom-persistence-design.md) for the format and migration contract.
+
+G8A defines, but does not implement or wire, an Arduino-independent
+`MicTapDetector`. A future hardware adapter will sample a confirmed analog
+microphone/envelope input at a scheduled cadence and pass samples/timestamps to
+the detector. Its one-event transient output will call the existing `TapTempo`
+path, then `TempoControl`; it has no BPM, EEPROM, GPIO, or transport dependency.
+Threshold, hysteresis, and refractory constants are blocked on human signal
+characterization. A0 remains the potentiometer input.

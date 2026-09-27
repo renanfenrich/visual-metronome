@@ -12,7 +12,9 @@
   firmware upload, and human physical visual validation complete)
 - [x] G7 - EEPROM presets (implementation, software validation, and
   human-observed physical validation complete)
-- [ ] G8 - Experimental microphone tap detection
+- [x] G8A - Microphone detector design and characterization plan
+- [ ] G8B - Microphone detector implementation (blocked pending human signal characterization)
+- [ ] G8C - Firmware integration and physical validation
 - [ ] G9 - MIDI Clock
 
 G0 through G7 are complete. G6A adds grouped 3/4, 4/4, 5/4, 6/8, and 7/8
@@ -31,3 +33,8 @@ restoration, preservation of the prior preset when power interrupts a pending
 change, transient transport and visual state, responsive rapid input, and
 working Tap Tempo and potentiometer pickup after restore. Hardware corruption
 injection and torn-record manipulation were not performed.
+
+G8A is design-only and complete. No microphone hardware or ADC pin is
+documented, so signal characterization remains a human-only gate before G8B.
+The future detector will emit transient-derived logical taps to the existing
+`TapTempo`, not calculate BPM. See the [G8 microphone design](g8-microphone-tap-design.md).
